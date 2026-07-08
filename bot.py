@@ -31,13 +31,20 @@ async def handle_key(update, context):
     url = "https://zermango.com/api/seller/reset-hwid"
     params = {"api_key": API_KEY_ZERMANGO, "key": user_key, "type": "aimbot"}
     try:
-        response = requests.get(url, params=params).json()
-        if response.get("success"):
-            await update.message.reply_text(f"✅ Thành công: {response.get('message')}")
+        response = requests.get(url, params=params)
+        
+        # Thêm dòng này để kiểm tra nội dung thực tế máy chủ trả về
+        print(f"Nội dung phản hồi: {response.text}")
+        
+        data = response.json() # Dòng này gây lỗi nếu phản hồi không phải JSON
+        
+        if data.get("success"):
+            await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
         else:
-            await update.message.reply_text(f"❌ Lỗi: {response.get('message')}")
+            await update.message.reply_text(f"❌ Lỗi: {data.get('message')}")
     except Exception as e:
-        await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)}")
+        # Sửa lại để bot báo lỗi rõ hơn
+        await update.message.reply_text(f"⚠️ Hệ thống đang gặp lỗi: {str(e)}")
 
 if __name__ == '__main__':
     # Chạy Web Server trong luồng riêng
