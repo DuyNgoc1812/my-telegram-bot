@@ -31,11 +31,16 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Kết quả từ Zermango:\n{response.text}")
     except Exception as e:
         await update.message.reply_text(f"Lỗi hệ thống: {str(e)}")
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+# ... các import khác ...
 
+# Dán thẳng token của bạn vào đây (trong dấu ngoặc kép)
+TOKEN = "1234567890:ABCdefGHIjklMNOpqrSTUvwxYZ" 
+
+# Phần code còn lại...
 if __name__ == '__main__':
-    # Khởi tạo ứng dụng bot
     application = ApplicationBuilder().token(TOKEN).build()
-    
+    # ... phần dưới giữ nguyên ...
     # Đăng ký các Handler
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
