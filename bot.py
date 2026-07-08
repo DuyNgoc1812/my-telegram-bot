@@ -34,9 +34,9 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     # 1. API_KEY phải nằm trong headers
     headers = {
-        "Authorization": API_KEY_ZERMANGO,  # Hoặc có thể là {"x-api-key": API_KEY_ZERMANGO} tùy hệ thống
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
-    }
+    "x-api-key": sk_141319a73c800049894a887a1fb07f8d,
+    "User-Agent": "Mozilla/5.0"
+}
     
     # 2. Body chỉ chứa các thông tin cần reset
     payload = {
