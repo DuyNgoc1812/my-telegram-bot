@@ -31,25 +31,25 @@ async def handle_key(update, context):
         user_key = update.message.text.strip()
         url = "https://zermango.com/api/seller/reset-hwid"
         
-        # Gán cứng Key tạm thời để test xem có chạy không
-        # Nếu chạy được thì sau đó mới dùng biến môi trường
         headers = {
-            "x-api-key": "sk_141319a73c800049894a887a1fb07f8d", 
+            "x-api-key": "DÁN_KEY_CỦA_BẠN_VÀO_ĐÂY", 
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0"
         }
         payload = {"key": user_key, "type": "aimbot"}
         
-        # Phản hồi ngay là đang xử lý
-        await update.message.reply_text("Đang xử lý request...")
-        
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         
-        # Trả về kết quả
-        await update.message.reply_text(f"Kết quả: {response.status_code} - {response.text}")
+        # Chỉ lấy 200 ký tự đầu tiên để tránh lỗi "Message too long"
+        short_response = response.text[:200] 
         
+        if response.status_code == 200:
+            await update.message.reply_text(f"✅ Kết quả API: {short_response}")
+        else:
+            await update.message.reply_text(f"⚠️ Lỗi {response.status_code}: {short_response}")
+            
     except Exception as e:
-        await update.message.reply_text(f"Lỗi crash: {str(e)}")
+        await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)[:100]}")
 
 if __name__ == '__main__':
     # Chạy Web Server trong luồng riêng
