@@ -29,21 +29,32 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     url = "https://zermango.com/api/seller/reset-hwid"
     params = {"api_key": API_KEY, "key": user_key, "type": "aimbot"}
-    headers = {"User-Agent": "Mozilla/5.0"}
+    
+    # Thêm Header giả lập trình duyệt Chrome để đánh lừa Cloudflare
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://zermango.com/"
+    }
     
     try:
+        # Sử dụng thêm headers vào lệnh request
         res = requests.get(url, params=params, headers=headers, timeout=10)
-        response_text = res.text
         
-        # Chia nhỏ tin nhắn nếu quá dài (giới hạn 4000 ký tự của Telegram)
-        if len(response_text) > 4000:
-            for i in range(0, len(response_text), 4000):
-                await update.message.reply_text(response_text[i:i+4000])
+        # Kiểm tra xem có bị Cloudflare chặn không (trả về HTML thay vì nội dung)
+        if "cloudflare" in res.text.lower() or "<title>Just a moment...</title>" in res.text:
+            await update.message.reply_text("Lỗi: Server Zermango đang chặn kết nối từ Bot. Vui lòng thử lại sau.")
         else:
-            await update.message.reply_text(f"Kết quả: {response_text}")
+            # Nếu thành công, gửi kết quả
+            response_text = res.text
+            if len(response_text) > 4000:
+                for i in range(0, len(response_text), 4000):
+                    await update.message.reply_text(response_text[i:i+4000])
+            else:
+                await update.message.reply_text(f"Kết quả: {response_text}")
             
     except Exception as e:
-        await update.message.reply_text(f"Lỗi: {str(e)}")
+        await update.message.reply_text(f"Lỗi kết nối: {str(e)}")
 
 async def main():
     # Khởi động Flask trong luồng phụ
