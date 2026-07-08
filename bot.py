@@ -19,7 +19,8 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_key = update.message.text.strip()
     url = "https://zermango.com/api/seller/reset-hwid"
     
-    # Phần này sẽ chứa tham số gửi đi
+    # Sử dụng 'params' thay vì 'headers' để truyền API Key
+    # Đây là cách URL trong tài liệu Zermango hiển thị (có dấu ?)
     params = {
         "api_key": sk_141319a73c800049894a887a1fb07f8d,
         "key": user_key,
@@ -27,17 +28,14 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     }
     
     try:
-        # Gửi request tới Zermango
+        # Gửi request
         response = requests.post(url, data=params, timeout=10)
         
-        # Phản hồi kết quả cho người dùng
-        if response.status_code == 200:
-            await update.message.reply_text(f"Phản hồi từ API: {response.text[:200]}")
-        else:
-            await update.message.reply_text(f"Lỗi API (Mã {response.status_code}): {response.text[:100]}")
+        # Gửi phản hồi lại Telegram để bạn biết chuyện gì đang xảy ra
+        await update.message.reply_text(f"Trạng thái: {response.status_code}\nNội dung: {response.text[:100]}")
             
     except Exception as e:
-        await update.message.reply_text(f"Lỗi hệ thống: {str(e)[:100]}")
+        await update.message.reply_text(f"Lỗi kết nối: {str(e)}")
 
 # --- CHẠY BOT ---
 # ... code cũ của bạn
