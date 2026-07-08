@@ -26,37 +26,30 @@ def run_web_server():
 async def start(update, context):
     await update.message.reply_text("Chào bạn! Hãy gửi Key để reset HWID.")
 
-async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    user_key = update.message.text.strip()
-    
-    # URL lấy từ tài liệu của bạn
-    url = "https://zermango.com/api/seller/reset-hwid"
-    
-    # 1. API_KEY phải nằm trong headers
-    headers = {
-    "x-api-key": sk_141319a73c800049894a887a1fb07f8d,
-    "User-Agent": "Mozilla/5.0"
-}
-    
-    # 2. Body chỉ chứa các thông tin cần reset
-    payload = {
-        "key": user_key, 
-        "type": "aimbot"
-    }
-    
-    # Sửa phần gọi API thành đoạn này
+async def handle_key(update, context):
     try:
-        # Thay data=payload bằng json=payload để gửi đúng định dạng JSON
+        user_key = update.message.text.strip()
+        url = "https://zermango.com/api/seller/reset-hwid"
+        
+        # Gán cứng Key tạm thời để test xem có chạy không
+        # Nếu chạy được thì sau đó mới dùng biến môi trường
+        headers = {
+            "x-api-key": "sk_141319a73c800049894a887a1fb07f8d", 
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0"
+        }
+        payload = {"key": user_key, "type": "aimbot"}
+        
+        # Phản hồi ngay là đang xử lý
+        await update.message.reply_text("Đang xử lý request...")
+        
         response = requests.post(url, json=payload, headers=headers, timeout=10)
         
-        if response.status_code == 200:
-            data = response.json()
-            await update.message.reply_text(f"✅ Phản hồi: {data.get('message', 'Thành công')}")
-        else:
-            await update.message.reply_text(f"❌ Lỗi API (Code {response.status_code}): {response.text}")
-            
+        # Trả về kết quả
+        await update.message.reply_text(f"Kết quả: {response.status_code} - {response.text}")
+        
     except Exception as e:
-        await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)}")
+        await update.message.reply_text(f"Lỗi crash: {str(e)}")
 
 if __name__ == '__main__':
     # Chạy Web Server trong luồng riêng
