@@ -44,19 +44,16 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "type": "aimbot"
     }
     
+    # Sửa phần gọi API thành đoạn này
     try:
-        # Sử dụng phương thức POST với headers và data
-        response = requests.post(url, data=payload, headers=headers)
+        # Thay data=payload bằng json=payload để gửi đúng định dạng JSON
+        response = requests.post(url, json=payload, headers=headers, timeout=10)
         
-        # Kiểm tra phản hồi
         if response.status_code == 200:
             data = response.json()
-            if data.get("success"):
-                await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
-            else:
-                await update.message.reply_text(f"❌ Lỗi: {data.get('message')}")
+            await update.message.reply_text(f"✅ Phản hồi: {data.get('message', 'Thành công')}")
         else:
-            await update.message.reply_text(f"⚠️ Lỗi kết nối (Mã {response.status_code}): Vui lòng kiểm tra lại API Key.")
+            await update.message.reply_text(f"❌ Lỗi API (Code {response.status_code}): {response.text}")
             
     except Exception as e:
         await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)}")
