@@ -27,7 +27,7 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     params = {"api_key": API_KEY, "key": user_key, "type": "aimbot"}
     
     try:
-        res = requests.get(url, params=params, timeout=5)
+        res = requests.get(url, params=params, timeout=10)
         await update.message.reply_text(f"Kết quả: {res.text}")
     except Exception as e:
         await update.message.reply_text(f"Lỗi: {str(e)}")
@@ -36,21 +36,9 @@ def run_bot():
     application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
-    application.run_polling()
+    application.run_polling(drop_pending_updates=True).
 
 if __name__ == '__main__':
-    # 1. Khởi tạo ứng dụng
-    application = ApplicationBuilder().token(TOKEN).build()
-    
-    # 2. ĐĂNG KÝ CÁC HÀM XỬ LÝ (Đây là phần bạn đang thiếu)
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
-    
-    # 3. Chạy bot
-    print("Bot đã sẵn sàng và đang lắng nghe...")
-    # Nếu đang dùng cách chạy Threading + Flask thì giữ nguyên phần threading của bạn
-    # Còn nếu chỉ chạy bot đơn thuần thì dùng dòng này:
-    application.run_polling(drop_pending_updates=True)
     threading.Thread(target=run_bot, daemon=True).start()
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
