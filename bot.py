@@ -38,11 +38,11 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Lỗi kết nối: {str(e)}")
 
 # --- CHẠY BOT ---
-# ... code cũ của bạn
 if __name__ == '__main__':
     application = ApplicationBuilder().token(BOT_TOKEN).build()
-    # ... add handlers ...
     
-    print("Bot đang chạy...")
-    # Thêm dòng này để ép xóa các phiên kết nối bị treo
+    # ... (các handler của bạn ở đây) ...
+    
+    print("Bot đang khởi động...")
+    # Thêm drop_pending_updates=True vào đây
     application.run_polling(drop_pending_updates=True)
