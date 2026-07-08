@@ -49,7 +49,7 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 if __name__ == '__main__':
     # Chạy Web Server trong luồng riêng
-    threading.Thread(target=run_web_server).start()
+    threading.Thread(target=run_web_server, daemon=True).start()
     
     # Cấu hình và chạy Bot
     application = ApplicationBuilder().token(BOT_TOKEN).build()
@@ -57,4 +57,5 @@ if __name__ == '__main__':
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
     
     print("Bot đang chạy...")
-    application.run_polling()
+    # Thêm drop_pending_updates=True để xóa các phiên kết nối cũ
+    application.run_polling(drop_pending_updates=True)
