@@ -40,11 +40,11 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text(f"Lỗi hệ thống: {str(e)[:100]}")
 
 # --- CHẠY BOT ---
+# ... code cũ của bạn
 if __name__ == '__main__':
     application = ApplicationBuilder().token(BOT_TOKEN).build()
+    # ... add handlers ...
     
-    application.add_handler(CommandHandler('start', start))
-    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
-    
-    print("Bot đang khởi động...")
+    print("Bot đang chạy...")
+    # Thêm dòng này để ép xóa các phiên kết nối bị treo
     application.run_polling(drop_pending_updates=True)
