@@ -29,6 +29,11 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 if __name__ == '__main__':
     application = ApplicationBuilder().token(BOT_TOKEN).build()
+    
+    # Thêm các handler của bạn ở đây
     application.add_handler(CommandHandler('start', start))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
-    application.run_polling()
+    
+    print("Bot đang khởi động...")
+    # LƯU Ý: drop_pending_updates=True là chìa khóa để hết lỗi Conflict
+    application.run_polling(drop_pending_updates=True)
