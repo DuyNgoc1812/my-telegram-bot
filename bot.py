@@ -31,10 +31,14 @@ async def handle_key(update, context):
         user_key = update.message.text.strip()
         url = "https://zermango.com/api/seller/reset-hwid"
         
+       # Đảm bảo API Key chỉ chứa ký tự chuẩn (không khoảng trắng thừa)
+        api_key = "sk_141319a73c800049894a887a1fb07f8d".strip()
+        
         headers = {
-            "x-api-key": "DÁN_KEY_CỦA_BẠN_VÀO_ĐÂY", 
+            "x-api-key": api_key.encode('utf-8').decode('latin-1'), # Ép kiểu an toàn
             "Content-Type": "application/json",
             "User-Agent": "Mozilla/5.0"
+        }
         }
         payload = {"key": user_key, "type": "aimbot"}
         
