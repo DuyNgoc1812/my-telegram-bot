@@ -36,7 +36,7 @@ def run_bot():
     application = ApplicationBuilder().token(TOKEN).build()
     application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
-    application.run_polling(drop_pending_updates=True).
+    application.run_polling(drop_pending_updates=True)
 
 if __name__ == '__main__':
     threading.Thread(target=run_bot, daemon=True).start()
