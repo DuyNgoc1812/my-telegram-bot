@@ -30,3 +30,23 @@ if __name__ == '__main__':
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
     print("Bot đang chạy...")
     application.run_polling()
+import threading
+from flask import Flask
+
+# Tạo một web server giả lập
+app = Flask(__name__)
+@app.route('/')
+def home():
+    return "Bot is running!"
+
+# Chạy web server trong một luồng riêng (thread) để không chặn bot
+def run_web_server():
+    app.run(host='0.0.0.0', port=8080)
+
+if __name__ == '__main__':
+    # Bật web server trước
+    threading.Thread(target=run_web_server).start()
+    
+    # Chạy bot bình thường
+    # Lưu ý: Nếu bạn dùng Application thì hãy dùng application.run_polling()
+    # application.run_polling()
