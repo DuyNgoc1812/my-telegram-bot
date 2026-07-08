@@ -3,46 +3,27 @@ from telegram import Update
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 import requests
 
-# --- CẤU HÌNH ---
-# Thay TOKEN của bot và API_KEY của Zermango vào đây
+# Thay TOKEN của bạn
 BOT_TOKEN = "8923714024:AAET1b1u4Z0gi-SCVg6IIHwT_mi4gkgTL98"
-API_KEY_ZERMANGO = "sk_141319a73c800049894a887a1fb07f8d"
-
-# --- LOGGING ---
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-
-# --- CÁC HÀM XỬ LÝ ---
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("Bot đã sẵn sàng. Hãy gửi Key để thực hiện lệnh.")
 
 async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_key = update.message.text.strip()
-    url = "https://zermango.com/api/seller/reset-hwid"
     
-    # Sử dụng 'params' thay vì 'headers' để truyền API Key
-    # Đây là cách URL trong tài liệu Zermango hiển thị (có dấu ?)
-    params = {
-        "api_key": sk_141319a73c800049894a887a1fb07f8d,
-        "key": user_key,
-        "type": "aimbot"
-    }
+    # URL cố định theo đúng cấu trúc bạn đã gửi
+    # Lưu ý: Thay API_KEY của bạn vào đây
+    url = f"https://zermango.com/api/seller/reset-hwid?api_key=sk_141319a73c800049894a887a1fb07f8d&key={user_key}&type=aimbot"
     
     try:
-        # Gửi request
-        response = requests.post(url, data=params, timeout=10)
+        # Dùng requests.get là đủ vì đây là URL trực tiếp
+        response = requests.get(url, timeout=10)
         
-        # Gửi phản hồi lại Telegram để bạn biết chuyện gì đang xảy ra
-        await update.message.reply_text(f"Trạng thái: {response.status_code}\nNội dung: {response.text[:100]}")
+        # Phản hồi lại cho bạn biết
+        await update.message.reply_text(f"Kết quả: {response.text}")
             
     except Exception as e:
         await update.message.reply_text(f"Lỗi kết nối: {str(e)}")
 
-# --- CHẠY BOT ---
 if __name__ == '__main__':
     application = ApplicationBuilder().token(BOT_TOKEN).build()
-    
-    # ... (các handler của bạn ở đây) ...
-    
-    print("Bot đang khởi động...")
-    # Thêm drop_pending_updates=True vào đây
+    application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
     application.run_polling(drop_pending_updates=True)
