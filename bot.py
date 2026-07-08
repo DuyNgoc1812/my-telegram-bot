@@ -28,26 +28,35 @@ async def start(update, context):
 
 async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_key = update.message.text.strip()
+    
+    # URL lấy từ tài liệu của bạn
     url = "https://zermango.com/api/seller/reset-hwid"
-    params = {"api_key": API_KEY_ZERMANGO, "key": user_key, "type": "aimbot"}
+    
+    # 1. API_KEY phải nằm trong headers
+    headers = {
+        "Authorization": API_KEY_ZERMANGO,  # Hoặc có thể là {"x-api-key": API_KEY_ZERMANGO} tùy hệ thống
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+    }
+    
+    # 2. Body chỉ chứa các thông tin cần reset
+    payload = {
+        "key": user_key, 
+        "type": "aimbot"
+    }
     
     try:
-        # Sử dụng requests.post thay vì get nếu API yêu cầu bảo mật cao
-        response = requests.post(url, data=params)
+        # Sử dụng phương thức POST với headers và data
+        response = requests.post(url, data=payload, headers=headers)
         
-        # Kiểm tra nếu phản hồi có nội dung
+        # Kiểm tra phản hồi
         if response.status_code == 200:
-            try:
-                data = response.json()
-                if data.get("success"):
-                    await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
-                else:
-                    await update.message.reply_text(f"❌ Lỗi từ API: {data.get('message')}")
-            except ValueError:
-                # Nếu API trả về văn bản thường thay vì JSON
-                await update.message.reply_text(f"⚠️ API phản hồi không phải định dạng JSON: {response.text[:100]}")
+            data = response.json()
+            if data.get("success"):
+                await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
+            else:
+                await update.message.reply_text(f"❌ Lỗi: {data.get('message')}")
         else:
-            await update.message.reply_text(f"⚠️ Lỗi máy chủ: {response.status_code}")
+            await update.message.reply_text(f"⚠️ Lỗi kết nối (Mã {response.status_code}): Vui lòng kiểm tra lại API Key.")
             
     except Exception as e:
         await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)}")
