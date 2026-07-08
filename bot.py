@@ -29,23 +29,28 @@ async def start(update, context):
 async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_key = update.message.text.strip()
     url = "https://zermango.com/api/seller/reset-hwid"
-    # Dữ liệu gửi đi dưới dạng dictionary
     params = {"api_key": API_KEY_ZERMANGO, "key": user_key, "type": "aimbot"}
     
     try:
-        # Thay requests.get(...) bằng requests.post(..., data=params)
+        # Sử dụng requests.post thay vì get nếu API yêu cầu bảo mật cao
         response = requests.post(url, data=params)
         
-        # Kiểm tra dữ liệu trả về
-        data = response.json()
-        
-        if data.get("success"):
-            await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
+        # Kiểm tra nếu phản hồi có nội dung
+        if response.status_code == 200:
+            try:
+                data = response.json()
+                if data.get("success"):
+                    await update.message.reply_text(f"✅ Thành công: {data.get('message')}")
+                else:
+                    await update.message.reply_text(f"❌ Lỗi từ API: {data.get('message')}")
+            except ValueError:
+                # Nếu API trả về văn bản thường thay vì JSON
+                await update.message.reply_text(f"⚠️ API phản hồi không phải định dạng JSON: {response.text[:100]}")
         else:
-            await update.message.reply_text(f"❌ Lỗi: {data.get('message')}")
+            await update.message.reply_text(f"⚠️ Lỗi máy chủ: {response.status_code}")
             
     except Exception as e:
-        await update.message.reply_text(f"⚠️ Hệ thống đang gặp lỗi: {str(e)}")
+        await update.message.reply_text(f"⚠️ Lỗi hệ thống: {str(e)}")
 
 if __name__ == '__main__':
     # Chạy Web Server trong luồng riêng
