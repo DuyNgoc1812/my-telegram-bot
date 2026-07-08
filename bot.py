@@ -28,9 +28,19 @@ async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     try:
         res = requests.get(url, params=params, timeout=10)
-        await update.message.reply_text(f"Kết quả: {res.text}")
+        response_text = res.text
+        
+        # Kiểm tra độ dài tin nhắn
+        if len(response_text) > 4000:
+            # Nếu quá dài, chia thành các phần nhỏ 4000 ký tự
+            for i in range(0, len(response_text), 4000):
+                await update.message.reply_text(response_text[i:i+4000])
+        else:
+            # Nếu vừa đủ thì gửi bình thường
+            await update.message.reply_text(f"Kết quả: {response_text}")
+            
     except Exception as e:
-        await update.message.reply_text(f"Lỗi: {str(e)}")
+        await update.message.reply_text(f"Lỗi kết nối API: {str(e)}")
 
 def run_bot():
     application = ApplicationBuilder().token(TOKEN).build()
