@@ -1,21 +1,25 @@
-from flask import Flask
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
+import logging
+from telegram import Update
+from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, MessageHandler, filters
 import requests
 import os
+from flask import Flask
 import threading
+
+# CẤU HÌNH TOKEN (Lấy từ BotFather)
+TOKEN = "8923714024:AAET1b1u4Z0gi-SCVg6IIHwT_mi4gkgTL98" # Thay Token của bạn vào đây
+API_KEY = "sk_141319a73c800049894a887a1fb07f8d"
 
 app = Flask(__name__)
 
-# Route giả để Render không tắt bot
 @app.route('/')
 def home():
     return "Bot is running!"
 
-# Hàm xử lý bot của bạn
-TOKEN = "8923714024:AAET1b1u4Z0gi-SCVg6IIHwT_mi4gkgTL98"
-API_KEY = "sk_141319a73c800049894a887a1fb07f8d"
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Chào bạn! Hãy nhập mã Key của bạn.")
 
-async def handle_key(update, context):
+async def handle_key(update: Update, context: ContextTypes.DEFAULT_TYPE):
     user_key = update.message.text.strip()
     if user_key.startswith('/'): return
     
@@ -30,13 +34,11 @@ async def handle_key(update, context):
 
 def run_bot():
     application = ApplicationBuilder().token(TOKEN).build()
+    application.add_handler(CommandHandler("start", start))
     application.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_key))
     application.run_polling()
 
 if __name__ == '__main__':
-    # Chạy bot trong luồng riêng
     threading.Thread(target=run_bot, daemon=True).start()
-    
-    # Lấy PORT từ biến môi trường, nếu không có thì mặc định là 8080
-    port = int(os.getenv("PORT", 8080))
+    port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
